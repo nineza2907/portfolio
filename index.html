@@ -637,14 +637,18 @@ function updateUSSummary(totalVal, totalCost) {
 
 renderThai(); renderUS();
 
-// render BTC เริ่มต้น — คำนวณกำไร/ขาดทุนจากมูลค่าที่แสดงอยู่แล้ว
+// render BTC เริ่มต้น
 (function initBTC() {
   const costPerBtc = Math.round(BTC_COST_PER_BTC).toLocaleString('th-TH');
   const avgEl = document.getElementById('btc-avg-price');
   if(avgEl) avgEl.textContent = costPerBtc+' ฿';
+  // ราคาตลาดเริ่มต้น = แสดง "กด อัปเดต" ก่อน
+  const mktEl = document.getElementById('btc-market-price');
+  if(mktEl) mktEl.textContent = 'กด อัปเดต';
   document.getElementById('btc-cost-thb').textContent = BTC_COST_THB.toFixed(2);
   document.getElementById('btc-thb').textContent     = '฿'+BTC_COST_THB.toFixed(2)+' THB';
   document.getElementById('btc-footer').textContent  = '฿'+BTC_COST_THB.toFixed(2)+' THB';
+  document.getElementById('btc-market').textContent  = '1 BTC = — ฿';
 
   function updateBTCPL() {
     const thbEl = document.getElementById('btc-thb');
