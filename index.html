@@ -579,16 +579,17 @@ function renderUS() {
   usStocks.forEach(s=>{
     const assetUSD = s.shares * s.price;
     const assetThb = assetUSD * THB_RATE;
-    const costUSD  = s.shares * (s._avgUsd || s.cost);
-    const costThb  = s._avgThb ? s.shares * s._avgThb : costUSD * THB_RATE;
+    // ต้นทุน THB: ใช้ _avgThb ถ้ามี มิฉะนั้นใช้ cost (USD) × rate
+    const avgThbPerShare = s._avgThb || (s.cost * THB_RATE);
+    const costThb  = s.shares * avgThbPerShare;
     const plThb    = assetThb - costThb;
-    const pct      = ((assetThb - costThb) / costThb) * 100;
+    const pct      = costThb > 0 ? (plThb / costThb) * 100 : 0;
     totalVal  += assetUSD;
     totalCost += s.shares * s.cost;
     const pos = pct >= 0, bw = Math.min(Math.abs(pct), 100);
 
     const avgUsdStr = s._avgUsd ? `$${s._avgUsd.toFixed(2)}` : `$${s.cost.toFixed(2)}`;
-    const avgThbStr = s._avgThb ? `฿${(s._avgThb).toFixed(2)}` : `฿${(s.cost*THB_RATE).toFixed(2)}`;
+    const avgThbStr = `฿${avgThbPerShare.toFixed(2)}`;
     const mktThb    = (s.price * THB_RATE).toFixed(2);
 
     tbody.innerHTML += `<tr>
@@ -1245,7 +1246,8 @@ async function fetchAll(){
         const npThb    = np * THB_RATE;
         const assetUSD = s.shares * np;
         const assetThb = assetUSD * THB_RATE;
-        const costThb  = s._avgThb ? s.shares * s._avgThb : assetThb;
+        const avgThbPerShare = s._avgThb || (s.cost * THB_RATE);
+        const costThb  = s.shares * avgThbPerShare;
         const pct      = costThb > 0 ? ((assetThb - costThb) / costThb) * 100 : 0;
         const pos      = pct >= 0;
         const plThb    = assetThb - costThb;
