@@ -437,12 +437,21 @@ const IS_FILE_PROTOCOL = location.protocol === 'file:';
 let currentRange = '6m';
 let growthChart = null;
 
+// ======================== GOOGLE SHEETS CONFIG ========================
+const SHEET_ID = '13SscZvWLqjV7HxMXnYlodB2RkTj2xFnic-QlxCW4eAA';
+const PRICES_CSV_URL     = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+const HISTORY_CSV_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=history`;
+const COST_BASIS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=cost_basis`;
+const APPS_SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbw4evT9V0If63VShGo31q2HazRi-_7p6QZymhsKWTIPO6NFERD90Nqa9GcHxTC_7pbw/exec';
+const TRANSACTIONS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=transactions`;
+
 // ======================== DATA ========================
 const BTC_AMOUNT = 0.00045185;
-const BTC_COST_PER_BTC = 2190308.11; // ฿/BTC (ต้นทุนเริ่มต้น — จะ override จาก cost_basis sheet)
-let BTC_COST_THB = BTC_AMOUNT * BTC_COST_PER_BTC; // ≈ 989.93 ฿
+const BTC_COST_PER_BTC = 2190308.11;
+let BTC_COST_THB = BTC_AMOUNT * BTC_COST_PER_BTC;
 let THB_RATE = 32.58;
-let DEPOSIT_THB = 32583.71; // หุ้นสหรัฐรวม — จะ override จาก cost_basis sheet
+let DEPOSIT_THB = 32583.71;
+const PORT_MONTHLY = {};
 
 const thaiStocks = [
   { sym:'CPALL', name:'CP All PCL',      vol:6,   avg:58.35,  market:45.50 },
@@ -1041,13 +1050,7 @@ async function fetchBTC(){
   updateBanner();
 }
 
-// ======================== GOOGLE SHEETS CONFIG ========================
-const SHEET_ID = '13SscZvWLqjV7HxMXnYlodB2RkTj2xFnic-QlxCW4eAA';
-const PRICES_CSV_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
-const HISTORY_CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=history`;
-const COST_BASIS_CSV_URL= `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=cost_basis`;
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbw4evT9V0If63VShGo31q2HazRi-_7p6QZymhsKWTIPO6NFERD90Nqa9GcHxTC_7pbw/exec';
-
+// ======================== GOOGLE SHEETS FUNCTIONS ========================
 function parseCSV(text) {
   const lines = text.trim().split('\n');
   const data = {};
@@ -1099,9 +1102,7 @@ async function fetchFromSheets() {
   return data;
 }
 
-// PORT_MONTHLY — มูลค่าพอร์ตจริงรายเดือน (ดึงจาก history sheet คอลัมน์ E)
-const PORT_MONTHLY = {};
-
+// PORT_MONTHLY — ดึงจาก history sheet คอลัมน์ E (ประกาศที่ global แล้ว)
 async function fetchHistory() {
   const res = await fetch(HISTORY_CSV_URL);
   const rows = parseHistoryCSV(await res.text());
@@ -1120,8 +1121,6 @@ async function fetchHistory() {
   });
   console.log('History loaded:', rows.length, 'months, port data:', Object.keys(PORT_MONTHLY).length, 'points');
 }
-
-const TRANSACTIONS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=transactions`;
 
 async function fetchCostBasis() {
   const res  = await fetch(TRANSACTIONS_CSV_URL);
