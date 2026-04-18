@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="th" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -6,6 +7,7 @@
 <title>My Portfolio</title>
 
 <!-- PWA: Add to Home Screen -->
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Portfolio">
@@ -13,9 +15,11 @@
 <meta name="theme-color" content="#0a0a0f">
 
 <!-- PWA Icon (inline SVG as data URL) -->
+
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%230a0a0f'/><text y='110' x='90' text-anchor='middle' font-size='90' font-family='monospace'>📈</text></svg>">
 
 <!-- PWA Manifest inline -->
+
 <script>
   const manifest = {
     name: 'My Portfolio Dashboard',
@@ -35,6 +39,7 @@
   link.href = URL.createObjectURL(blob);
   document.currentScript.after(link);
 </script>
+
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -60,18 +65,18 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 /* HEADER */
 header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-.title-block h1{font-family:var(--mono);font-size:18px;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;}
-.title-block p{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--mono);}
+.title-block h1{font-family:var(–mono);font-size:18px;color:var(–accent2);letter-spacing:2px;text-transform:uppercase;}
+.title-block p{font-size:11px;color:var(–muted);margin-top:3px;font-family:var(–mono);}
 .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.date-block{text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);}
-.date-block .time{font-size:18px;color:var(--text);font-weight:700;display:block;}
+.date-block{text-align:right;font-family:var(–mono);font-size:11px;color:var(–muted);}
+.date-block .time{font-size:18px;color:var(–text);font-weight:700;display:block;}
 
 /* THEME TOGGLE */
-.theme-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer;font-size:13px;color:var(--text);transition:all 0.2s;font-family:var(--thai);}
-.theme-btn:hover{border-color:var(--accent);}
+.theme-btn{background:var(–surface);border:1px solid var(–border);border-radius:20px;padding:6px 12px;cursor:pointer;font-size:13px;color:var(–text);transition:all 0.2s;font-family:var(–thai);}
+.theme-btn:hover{border-color:var(–accent);}
 
 /* REFRESH */
-.refresh-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),#5b4fcf);border:none;border-radius:8px;color:#fff;font-family:var(--thai);font-size:14px;font-weight:600;padding:10px 16px;cursor:pointer;transition:opacity 0.2s,transform 0.1s;margin-bottom:12px;width:100%;justify-content:center;}
+.refresh-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(–accent),#5b4fcf);border:none;border-radius:8px;color:#fff;font-family:var(–thai);font-size:14px;font-weight:600;padding:10px 16px;cursor:pointer;transition:opacity 0.2s,transform 0.1s;margin-bottom:12px;width:100%;justify-content:center;}
 .refresh-btn:hover{opacity:0.85;}
 .refresh-btn:active{transform:scale(0.98);}
 .refresh-btn:disabled{opacity:0.5;cursor:not-allowed;}
@@ -79,103 +84,105 @@ header{display:flex;justify-content:space-between;align-items:flex-start;margin-
 .spinning{display:inline-block;animation:spin 1s linear infinite;}
 
 /* STATUS */
-.status-bar{display:flex;align-items:center;gap:8px;font-size:11px;font-family:var(--mono);color:var(--muted);margin-bottom:14px;padding:7px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;min-height:34px;}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0;}
-.status-dot.live{background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite;}
-.status-dot.loading{background:var(--yellow);animation:pulse 0.5s infinite;}
-.status-dot.error{background:var(--red);}
+.status-bar{display:flex;align-items:center;gap:8px;font-size:11px;font-family:var(–mono);color:var(–muted);margin-bottom:14px;padding:7px 12px;background:var(–surface);border:1px solid var(–border);border-radius:8px;min-height:34px;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(–muted);flex-shrink:0;}
+.status-dot.live{background:var(–green);box-shadow:0 0 6px var(–green);animation:pulse 2s infinite;}
+.status-dot.loading{background:var(–yellow);animation:pulse 0.5s infinite;}
+.status-dot.error{background:var(–red);}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 
 /* TOTAL PORTFOLIO BANNER */
-.portfolio-banner{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:16px;position:relative;overflow:hidden;}
-.portfolio-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,var(--accent),var(--yellow));}
+.portfolio-banner{background:var(–surface);border:1px solid var(–border);border-radius:14px;padding:18px 20px;margin-bottom:16px;position:relative;overflow:hidden;}
+.portfolio-banner::before{content:’’;position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,var(–accent),var(–yellow));}
 .banner-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;flex-wrap:wrap;}
-.banner-item .bi-label{font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:5px;}
-.banner-item .bi-val{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--text);}
-.banner-item .bi-sub{font-size:11px;font-family:var(--mono);margin-top:3px;color:var(--muted);}
+.banner-item .bi-label{font-size:10px;color:var(–muted);font-family:var(–mono);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:5px;}
+.banner-item .bi-val{font-family:var(–mono);font-size:17px;font-weight:700;color:var(–text);}
+.banner-item .bi-sub{font-size:11px;font-family:var(–mono);margin-top:3px;color:var(–muted);}
 
 /* SUMMARY CARDS */
 .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;position:relative;overflow:hidden;}
-.summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.summary-card{background:var(–surface);border:1px solid var(–border);border-radius:12px;padding:13px;position:relative;overflow:hidden;}
+.summary-card::before{content:’’;position:absolute;top:0;left:0;right:0;height:2px;}
 .summary-card.thai::before{background:linear-gradient(90deg,#f59e0b,#ef4444);}
-.summary-card.us::before{background:linear-gradient(90deg,var(--accent),var(--accent2));}
-.summary-card.crypto::before{background:linear-gradient(90deg,var(--yellow),#f97316);}
-.sc-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono);margin-bottom:5px;}
-.sc-val{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);}
-.sc-sub{font-size:10px;font-family:var(--mono);margin-top:3px;}
-.pos{color:var(--green);}
-.neg{color:var(--red);}
+.summary-card.us::before{background:linear-gradient(90deg,var(–accent),var(–accent2));}
+.summary-card.crypto::before{background:linear-gradient(90deg,var(–yellow),#f97316);}
+.sc-label{font-size:10px;color:var(–muted);text-transform:uppercase;letter-spacing:1.5px;font-family:var(–mono);margin-bottom:5px;}
+.sc-val{font-family:var(–mono);font-size:14px;font-weight:700;color:var(–text);}
+.sc-sub{font-size:10px;font-family:var(–mono);margin-top:3px;}
+.pos{color:var(–green);}
+.neg{color:var(–red);}
 
 /* CHART */
-.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px;}
+.chart-section{background:var(–surface);border:1px solid var(–border);border-radius:14px;padding:18px;margin-bottom:16px;}
 .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
-.chart-title{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:1px;}
+.chart-title{font-family:var(–mono);font-size:13px;font-weight:700;color:var(–text);text-transform:uppercase;letter-spacing:1px;}
 .range-btns{display:flex;gap:4px;}
-.range-btn{padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all 0.15s;}
-.range-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.range-btn{padding:5px 12px;border:1px solid var(–border);border-radius:6px;background:transparent;color:var(–muted);font-family:var(–mono);font-size:11px;cursor:pointer;transition:all 0.15s;}
+.range-btn.active{background:var(–accent);border-color:var(–accent);color:#fff;}
 .chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
-.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;font-family:var(--mono);color:var(--muted);}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;font-family:var(–mono);color:var(–muted);}
 .leg-dot{width:10px;height:3px;border-radius:2px;}
 .chart-wrap{position:relative;height:220px;}
 
 /* TABS */
-.tabs{display:flex;gap:4px;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;}
-.tab{flex:1;padding:7px;border:none;background:transparent;color:var(--muted);border-radius:7px;cursor:pointer;font-family:var(--thai);font-size:13px;transition:all 0.2s;font-weight:600;}
-.tab.active{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.tabs{display:flex;gap:4px;margin-bottom:12px;background:var(–surface);border:1px solid var(–border);border-radius:10px;padding:4px;}
+.tab{flex:1;padding:7px;border:none;background:transparent;color:var(–muted);border-radius:7px;cursor:pointer;font-family:var(–thai);font-size:13px;transition:all 0.2s;font-weight:600;}
+.tab.active{background:var(–surface2);color:var(–text);border:1px solid var(–border);}
 .panel{display:none;}
 .panel.active{display:block;}
 
 /* TABLE */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.table-wrap{background:var(–surface);border:1px solid var(–border);border-radius:12px;overflow:hidden;}
 table{width:100%;border-collapse:collapse;}
-thead tr{border-bottom:1px solid var(--border);}
-thead th{padding:9px 11px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);text-align:right;}
+thead tr{border-bottom:1px solid var(–border);}
+thead th{padding:9px 11px;font-size:10px;color:var(–muted);text-transform:uppercase;letter-spacing:1px;font-family:var(–mono);text-align:right;}
 thead th:first-child{text-align:left;}
 tbody tr{border-bottom:1px solid rgba(42,42,58,0.4);transition:background 0.15s;}
 tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:var(--surface2);}
-td{padding:10px 11px;font-size:12px;text-align:right;font-family:var(--mono);}
+tbody tr:hover{background:var(–surface2);}
+td{padding:10px 11px;font-size:12px;text-align:right;font-family:var(–mono);}
 td:first-child{text-align:left;}
-.sym{font-weight:700;font-size:13px;color:var(--text);}
-.sym-sub{font-size:10px;color:var(--muted);margin-top:1px;}
-.muted-cell{color:var(--muted);font-size:11px;}
-.price-cell{color:var(--text);transition:color 0.8s;}
-.flash-g{color:var(--green)!important;}
-.flash-r{color:var(--red)!important;}
-.bar-wrap{width:44px;height:3px;background:var(--border);border-radius:2px;margin-left:auto;margin-top:3px;}
+.sym{font-weight:700;font-size:13px;color:var(–text);}
+.sym-sub{font-size:10px;color:var(–muted);margin-top:1px;}
+.muted-cell{color:var(–muted);font-size:11px;}
+.price-cell{color:var(–text);transition:color 0.8s;}
+.flash-g{color:var(–green)!important;}
+.flash-r{color:var(–red)!important;}
+.bar-wrap{width:44px;height:3px;background:var(–border);border-radius:2px;margin-left:auto;margin-top:3px;}
 .bar{height:100%;border-radius:2px;transition:width 0.6s;}
 
 /* TOTAL BAR */
-.total-bar{margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
-.t-label{font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px;}
-.t-value{font-family:var(--mono);font-size:15px;font-weight:700;}
-.divider{border-top:1px solid var(--border);margin:10px 0;}
+.total-bar{margin-top:10px;background:var(–surface);border:1px solid var(–border);border-radius:10px;padding:12px 14px;}
+.t-label{font-size:10px;color:var(–muted);font-family:var(–mono);text-transform:uppercase;letter-spacing:1px;}
+.t-value{font-family:var(–mono);font-size:15px;font-weight:700;}
+.divider{border-top:1px solid var(–border);margin:10px 0;}
 .deposit-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-.dep-label{font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px;}
-.dep-val{font-size:12px;font-family:var(--mono);margin-top:3px;color:var(--text);}
+.dep-label{font-size:10px;color:var(–muted);font-family:var(–mono);text-transform:uppercase;letter-spacing:1px;}
+.dep-val{font-size:12px;font-family:var(–mono);margin-top:3px;color:var(–text);}
 
 /* CRYPTO */
-.crypto-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;}
-.crypto-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--yellow),#f97316);}
-.btc-icon{width:40px;height:40px;background:linear-gradient(135deg,#f7931a,#f5c842);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;font-family:var(--mono);}
+.crypto-card{background:var(–surface);border:1px solid var(–border);border-radius:12px;padding:18px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;}
+.crypto-card::before{content:’’;position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(–yellow),#f97316);}
+.btc-icon{width:40px;height:40px;background:linear-gradient(135deg,#f7931a,#f5c842);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;font-family:var(–mono);}
 .crypto-left{display:flex;align-items:center;gap:12px;}
 .crypto-right{text-align:right;}
-.upd{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:7px;text-align:right;}
+.upd{font-size:10px;color:var(–muted);font-family:var(–mono);margin-top:7px;text-align:right;}
 
 @media(max-width:650px){
-  .summary-grid{grid-template-columns:1fr 1fr;}
-  .summary-card.crypto{grid-column:1/-1;}
-  .banner-grid{grid-template-columns:1fr 1fr;}
-  td,th{padding:7px 7px;font-size:11px;}
-  .deposit-grid{grid-template-columns:1fr;}
+.summary-grid{grid-template-columns:1fr 1fr;}
+.summary-card.crypto{grid-column:1/-1;}
+.banner-grid{grid-template-columns:1fr 1fr;}
+td,th{padding:7px 7px;font-size:11px;}
+.deposit-grid{grid-template-columns:1fr;}
 }
 </style>
+
 </head>
 <body>
 <div class="container">
 
 <!-- HEADER -->
+
 <header>
   <div class="title-block">
     <h1>MY PORTFOLIO</h1>
@@ -204,6 +211,7 @@ td:first-child{text-align:left;}
 </button>
 
 <!-- UPLOAD MODAL -->
+
 <div id="uploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;width:min(480px,92vw);max-height:90vh;overflow-y:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -211,36 +219,39 @@ td:first-child{text-align:left;}
       <button onclick="closeUploadModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">✕</button>
     </div>
 
-    <!-- Drop zone -->
-    <div id="dropZone" onclick="document.getElementById('receiptFile').click()"
-      style="border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:16px;">
-      <div style="font-size:32px;margin-bottom:8px;">📄</div>
-      <div style="font-size:13px;color:var(--text);">คลิกเพื่อเลือกภาพใบยืนยัน</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;">รองรับ Streaming / Dime! / Binance TH</div>
-      <input type="file" id="receiptFile" accept="image/*" style="display:none" onchange="handleReceiptUpload(event)">
-    </div>
+```
+<!-- Drop zone -->
+<div id="dropZone" onclick="document.getElementById('receiptFile').click()"
+  style="border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:16px;">
+  <div style="font-size:32px;margin-bottom:8px;">📄</div>
+  <div style="font-size:13px;color:var(--text);">คลิกเพื่อเลือกภาพใบยืนยัน</div>
+  <div style="font-size:11px;color:var(--muted);margin-top:4px;">รองรับ Streaming / Dime! / Binance TH</div>
+  <input type="file" id="receiptFile" accept="image/*" style="display:none" onchange="handleReceiptUpload(event)">
+</div>
 
-    <!-- Preview -->
-    <img id="receiptPreview" style="display:none;width:100%;border-radius:8px;margin-bottom:16px;max-height:200px;object-fit:contain;">
+<!-- Preview -->
+<img id="receiptPreview" style="display:none;width:100%;border-radius:8px;margin-bottom:16px;max-height:200px;object-fit:contain;">
 
-    <!-- Status -->
-    <div id="uploadStatus" style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:12px;min-height:20px;"></div>
+<!-- Status -->
+<div id="uploadStatus" style="font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:12px;min-height:20px;"></div>
 
-    <!-- Extracted data -->
-    <div id="extractedData" style="display:none;background:var(--surface2);border-radius:8px;padding:16px;margin-bottom:16px;font-size:12px;font-family:var(--mono);">
-      <div style="color:var(--accent2);margin-bottom:8px;font-size:13px;">✅ ข้อมูลที่อ่านได้:</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;" id="extractedFields"></div>
-    </div>
+<!-- Extracted data -->
+<div id="extractedData" style="display:none;background:var(--surface2);border-radius:8px;padding:16px;margin-bottom:16px;font-size:12px;font-family:var(--mono);">
+  <div style="color:var(--accent2);margin-bottom:8px;font-size:13px;">✅ ข้อมูลที่อ่านได้:</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;" id="extractedFields"></div>
+</div>
 
-    <!-- Action buttons -->
-    <div style="display:flex;gap:8px;">
-      <button id="confirmSaveBtn" onclick="confirmSaveTransaction()" style="display:none;flex:1;background:linear-gradient(135deg,var(--accent),#5b4fcf);border:none;border-radius:8px;color:#fff;font-family:var(--thai);font-size:13px;padding:10px;cursor:pointer;">
-        ✅ บันทึกลง Google Sheet
-      </button>
-      <button onclick="closeUploadModal()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--thai);font-size:13px;padding:10px;cursor:pointer;">
-        ยกเลิก
-      </button>
-    </div>
+<!-- Action buttons -->
+<div style="display:flex;gap:8px;">
+  <button id="confirmSaveBtn" onclick="confirmSaveTransaction()" style="display:none;flex:1;background:linear-gradient(135deg,var(--accent),#5b4fcf);border:none;border-radius:8px;color:#fff;font-family:var(--thai);font-size:13px;padding:10px;cursor:pointer;">
+    ✅ บันทึกลง Google Sheet
+  </button>
+  <button onclick="closeUploadModal()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--thai);font-size:13px;padding:10px;cursor:pointer;">
+    ยกเลิก
+  </button>
+</div>
+```
+
   </div>
 </div>
 
@@ -250,6 +261,7 @@ td:first-child{text-align:left;}
 </div>
 
 <!-- TOTAL PORTFOLIO BANNER -->
+
 <div class="portfolio-banner">
   <div class="banner-grid">
     <div class="banner-item">
@@ -276,6 +288,7 @@ td:first-child{text-align:left;}
 </div>
 
 <!-- SUMMARY CARDS -->
+
 <div class="summary-grid">
   <div class="summary-card thai">
     <div class="sc-label">🇹🇭 หุ้นไทย</div>
@@ -300,6 +313,7 @@ td:first-child{text-align:left;}
 </div>
 
 <!-- GROWTH CHART -->
+
 <div class="chart-section">
   <div class="chart-header">
     <div class="chart-title">📈 Profit Growth</div>
@@ -322,6 +336,7 @@ td:first-child{text-align:left;}
 </div>
 
 <!-- TABS -->
+
 <div class="tabs">
   <button class="tab active" onclick="showPanel('thai',this)">🇹🇭 หุ้นไทย</button>
   <button class="tab" onclick="showPanel('us',this)">🇺🇸 หุ้นสหรัฐ</button>
@@ -329,6 +344,7 @@ td:first-child{text-align:left;}
 </div>
 
 <!-- THAI PANEL -->
+
 <div class="panel active" id="thai">
   <div class="table-wrap">
     <table>
@@ -351,6 +367,7 @@ td:first-child{text-align:left;}
 </div>
 
 <!-- US PANEL -->
+
 <div class="panel" id="us">
   <div class="table-wrap">
     <table>
@@ -392,6 +409,7 @@ td:first-child{text-align:left;}
 </div>
 
 <!-- CRYPTO PANEL -->
+
 <div class="panel" id="crypto">
   <div class="table-wrap">
     <table>
@@ -824,38 +842,28 @@ function generateChartData(range) {
   const mons = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
   const now  = new Date(2026, 3, 16);
 
-  // หาจุดเริ่มต้นจาก PORT_MONTHLY ที่มีข้อมูลจริงจาก Sheet (แถว 3)
-  const portKeys = Object.keys(PORT_MONTHLY).sort((a,b)=>{
-    const [ay,am]=a.split('-').map(Number), [by,bm]=b.split('-').map(Number);
-    return (ay*12+am)-(by*12+bm);
-  });
-  const earliestKey = portKeys[0];
-  let startFixed;
-  if (earliestKey) {
-    const [ey,em] = earliestKey.split('-').map(Number);
-    startFixed = new Date(ey, em, 1);
-  } else {
-    startFixed = new Date(2025, 0, 1);
-  }
+  // จุดเริ่มต้นคงที่ = 2026-04 (เม.ย. 2569) ซึ่งตรงกับ E3 ใน Sheet
+  const originKey  = '2026-3'; // April 2026 = month index 3
+  const originPort = PORT_MONTHLY[originKey] || 62404.55; // E3
+  const originSp   = SP500_MONTHLY[originKey]    || 6582.69;
+  const originSet  = SET_LIVE_MONTHLY[originKey] || 1454.00;
+  const originBtc  = BTC_MONTHLY[originKey]      || 67085.84;
 
+  // startFixed = เม.ย. 2569 เสมอ (ไม่ย้อนไปก่อนหน้า)
+  const startFixed = new Date(2026, 3, 1);
   const m = rangeToMonths(range);
   let startDate = new Date(now.getFullYear(), now.getMonth() - m, 1);
   if (startDate < startFixed) startDate = new Date(startFixed);
 
   const labels = [], portData = [], sp500Data = [], setData = [], btcData = [];
 
-  let thaiCost=0;
-  thaiStocks.forEach(s=>{ thaiCost+=s.avg*s.vol; });
+  let thaiCost = 0;
+  thaiStocks.forEach(s => { thaiCost += s.avg * s.vol; });
   const totalCostThb = thaiCost + DEPOSIT_THB + BTC_COST_THB;
-
-  const baseKey    = `${startDate.getFullYear()}-${startDate.getMonth()}`;
-  const portBaseThb = PORT_MONTHLY[baseKey] || getPortThb(baseKey) || totalCostThb;
-  const spBase     = SP500_MONTHLY[baseKey]    || SP500_MONTHLY[earliestKey] || 6582;
-  const setBase    = SET_LIVE_MONTHLY[baseKey] || SET_LIVE_MONTHLY[earliestKey] || 1454;
-  const btcBase    = BTC_MONTHLY[baseKey]      || BTC_MONTHLY[earliestKey] || 67085;
+  const portBaseThb  = originPort;
 
   const totalMonths = m || 1;
-  const showEvery   = totalMonths <= 1 ? 1 : totalMonths <= 3 ? 1 : totalMonths <= 6 ? 1 : 2;
+  const showEvery   = totalMonths <= 1 ? 1 : 1;
 
   let cur = new Date(startDate), idx = 0;
   while (cur <= now) {
@@ -863,22 +871,25 @@ function generateChartData(range) {
     const key = `${y}-${mo}`;
     labels.push(idx % showEvery === 0 ? mons[mo]+' '+(y+543) : '');
 
-    const sp    = SP500_MONTHLY[key]    ?? null;
-    const set   = SET_LIVE_MONTHLY[key] ?? null;
-    const btc   = BTC_MONTHLY[key]      ?? null;
-    const ptThb = PORT_MONTHLY[key] ?? null; // ใช้เฉพาะข้อมูลจาก Sheet — ไม่ interpolate
-
-    const spThb   = sp  !== null && spBase  ? Math.round(portBaseThb*(sp/spBase))   : null;
-    const setThb  = set !== null && setBase ? Math.round(portBaseThb*(set/setBase)) : null;
-    const btcThb  = btc !== null && btcBase ? Math.round(portBaseThb*(btc/btcBase)) : null;
+    // เส้นพอร์ต = ค่าจริงจาก PORT_MONTHLY (บันทึกจาก Sheet)
+    const ptThb   = PORT_MONTHLY[key] ?? null;
     const portThb = ptThb !== null && isFinite(ptThb) ? Math.round(ptThb) : null;
 
+    // เส้นดัชนี = originPort × (ดัชนีปัจจุบัน / ดัชนีเริ่มต้น เม.ย.)
+    const sp  = SP500_MONTHLY[key]    ?? null;
+    const set = SET_LIVE_MONTHLY[key] ?? null;
+    const btc = BTC_MONTHLY[key]      ?? null;
+
+    const spThb  = sp  !== null && originSp  ? Math.round(originPort * (sp  / originSp))  : null;
+    const setThb = set !== null && originSet ? Math.round(originPort * (set / originSet)) : null;
+    const btcThb = btc !== null && originBtc ? Math.round(originPort * (btc / originBtc)) : null;
+
+    portData.push(portThb);
     sp500Data.push(spThb);
     setData.push(setThb);
-    portData.push(portThb);
     btcData.push(btcThb);
 
-    cur.setMonth(cur.getMonth()+1); idx++;
+    cur.setMonth(cur.getMonth() + 1); idx++;
   }
 
   return { labels, portData, sp500Data, setData, btcData, totalCostThb, portBaseThb };
@@ -996,7 +1007,7 @@ function buildChart(range) {
   // อัปเดต note ใต้กราฟ
   const portPts = Object.keys(PORT_MONTHLY).length;
   document.getElementById('chart-note').textContent =
-    `* โหลดข้อมูลจาก Google Sheets · พอร์ต ${portPts} จุด · ทุกเส้นเริ่มจากมูลค่า ฿${Math.round(portBaseThb).toLocaleString('th-TH')} · SET จาก Sheets · S&P500/BTC ประมาณการ`;
+    `* ทุกเส้นเริ่มต้น 1 เม.ย. 2569 ที่ ฿${Math.round(portBaseThb).toLocaleString('th-TH')} · พอร์ต ${portPts} จุดข้อมูล · S&P500/BTC ประมาณการ`;
 }
 
 function setRange(range, btn) {
@@ -1584,5 +1595,6 @@ updateBanner();
   } catch(e) { console.log('Init failed:', e.message); }
 })();
 </script>
+
 </body>
 </html>
