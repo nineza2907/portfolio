@@ -522,16 +522,14 @@ td,th{padding:7px 7px;font-size:11px;}
       </div>
     </div>
     <div class="divider"></div>
-    <div class="deposit-grid">
-      <div><div class="dep-label">เงินลงทุน ปี 2568</div><div class="dep-val">22,587.05 ฿</div></div>
-      <div><div class="dep-label">เงินลงทุน ปี 2569</div><div class="dep-val">9,996.66 ฿</div></div>
-      <div><div class="dep-label">รวมเงินลงทุน</div><div class="dep-val">32,583.71 ฿</div></div>
+    <div class="deposit-grid" style="grid-template-columns:1fr">
+      <div><div class="dep-label">รวมเงินลงทุน US</div><div class="dep-val" id="us-dep-total">— ฿</div></div>
     </div>
     <div class="divider"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
       <div>
         <div class="t-label">กำไร / ขาดทุน (THB)</div>
-        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px">มูลค่าปัจจุบัน (THB) − เงินลงทุนรวม 32,583.71 ฿</div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px" id="us-pl-sub">มูลค่าปัจจุบัน (THB) − เงินลงทุนรวม — ฿</div>
       </div>
       <div style="text-align:right">
         <div class="t-value" id="us-chg" style="font-size:17px">—</div>
@@ -688,8 +686,7 @@ function updateBanner() {
 
   document.getElementById('b-total').textContent = fmt(totalAssetThb)+' ฿';
   document.getElementById('b-total-sub').textContent = 'หุ้นไทย + สหรัฐ + Crypto';
-  const costEl = document.getElementById('b-cost');
-  if(costEl) costEl.textContent = fmt(totalCostThb)+' ฿';
+  // b-cost is updated by fetchCostBasis() from cost_basis sheet — do not override here
   document.getElementById('b-pl').textContent = (plpos?'+':'')+fmt(pl)+' ฿';
   document.getElementById('b-pl').className = 'bi-val '+(plpos?'pos':'neg');
   document.getElementById('b-pl-pct').textContent = (plpos?'▲ +':'▼ ')+plPct.toFixed(2)+'%';
@@ -1711,20 +1708,22 @@ async function fetchHistory() {
 }
 
 async function fetchCostBasis() {
+  // ===== 1. ดึง transactions sheet — คำนวณ avg_cost และ DEPOSIT_THB =====
   const res  = await fetch(TRANSACTIONS_CSV_URL);
   const text = await res.text();
   const lines = text.trim().split('\n');
   // header: date,asset,type,action,quantity,price_usd,price_thb,fx_rate,total_thb,note
 
   const acc = {}; // { SYMBOL: {qty, total_thb, total_usd_weighted, type} }
+  let totalUsCostThb = 0; // SUM total_thb เฉพาะ type=us (ทุก BUY จริง)
 
   for (let i = 1; i < lines.length; i++) {
     const cols    = parseCSVLine(lines[i]);
     const asset   = cols[1]?.toUpperCase();
-    const type    = cols[2];
+    const type    = cols[2]?.toLowerCase().trim();
     const action  = cols[3]?.toUpperCase();
     const qty     = parseFloat(cols[4]) || 0;
-    const priceUsd= parseFloat(cols[5]) || 0; // price_usd ต่อหุ้น
+    const priceUsd= parseFloat(cols[5]) || 0;
     const thb     = parseFloat(cols[8]) || 0;
     if (!asset || !action || qty <= 0) continue;
 
@@ -1732,12 +1731,16 @@ async function fetchCostBasis() {
     if (action === 'BUY') {
       acc[asset].qty                += qty;
       acc[asset].total_thb          += thb;
-      acc[asset].total_usd_weighted += qty * priceUsd; // สำหรับ avg USD = Σ(qty×price)/Σqty
+      acc[asset].total_usd_weighted += qty * priceUsd;
+      // สะสม US cost จาก transaction จริง (ไม่ใช่จาก weighted avg)
+      if (type === 'us') totalUsCostThb += thb;
     } else if (action === 'SELL') {
       const ratio = acc[asset].qty > 0 ? qty / acc[asset].qty : 0;
       acc[asset].total_thb          -= acc[asset].total_thb * ratio;
       acc[asset].total_usd_weighted -= acc[asset].total_usd_weighted * ratio;
       acc[asset].qty                -= qty;
+      // หักต้นทุนที่ขายออก
+      if (type === 'us') totalUsCostThb -= totalUsCostThb * ratio;
     }
   }
 
@@ -1750,25 +1753,51 @@ async function fetchCostBasis() {
     }
   });
 
-  // หุ้นสหรัฐ
-  let totalUsCostThb = 0;
+  // หุ้นสหรัฐ — avg_cost per share
   usStocks.forEach(s => {
     const d = acc[s.sym.toUpperCase()];
     if (d && d.qty > 0) {
       s.shares   = Math.round(d.qty * 1e7) / 1e7;
       const avgThb = d.total_thb / d.qty;
-      const avgUsd = d.total_usd_weighted / d.qty; // Σ(qty×price_usd)/Σqty
+      const avgUsd = d.total_usd_weighted / d.qty;
       s._avgThb  = avgThb;
       s._avgUsd  = avgUsd > 0 ? Math.round(avgUsd * 100) / 100 : null;
       s.cost     = avgThb > 0 && THB_RATE > 0 ? Math.round((avgThb / THB_RATE)*100)/100 : s._avgUsd || s.cost;
-      totalUsCostThb += d.total_thb;
     }
   });
-  if (totalUsCostThb > 0) DEPOSIT_THB = Math.round(totalUsCostThb * 100) / 100;
+
+  // อัปเดต DEPOSIT_THB จาก SUM total_thb type=us
+  if (totalUsCostThb > 0) {
+    DEPOSIT_THB = Math.round(totalUsCostThb * 100) / 100;
+    const el = document.getElementById('us-dep-total');
+    if (el) el.textContent = fmt(DEPOSIT_THB) + ' ฿';
+    const subEl = document.getElementById('us-pl-sub');
+    if (subEl) subEl.textContent = 'มูลค่าปัจจุบัน (THB) − เงินลงทุนรวม ' + fmt(DEPOSIT_THB) + ' ฿';
+  }
 
   // BTC
   const btcD = acc['BTC'];
   if (btcD && btcD.total_thb > 0) BTC_COST_THB = Math.round(btcD.total_thb * 100) / 100;
+
+  // ===== 2. ดึง cost_basis sheet — SUM col E สำหรับ Banner "เงินลงทุนรวมทุกพอร์ต" =====
+  try {
+    const cbRes  = await fetch(COST_BASIS_CSV_URL);
+    const cbText = await cbRes.text();
+    const cbLines = cbText.trim().split('\n');
+    // header: asset, type, total_qty, avg_cost, total_invested_thb
+    let sumInvestedThb = 0;
+    for (let i = 1; i < cbLines.length; i++) {
+      const cols = parseCSVLine(cbLines[i]);
+      const val  = parseFloat(cols[4]); // col E = total_invested_thb
+      if (isFinite(val)) sumInvestedThb += val;
+    }
+    if (sumInvestedThb > 0) {
+      const costEl = document.getElementById('b-cost');
+      if (costEl) costEl.textContent = fmt(sumInvestedThb) + ' ฿';
+    }
+  } catch(e) {
+    console.warn('cost_basis sheet fetch failed:', e.message);
+  }
 
   console.log('Applied — DEPOSIT_THB:', DEPOSIT_THB.toFixed(2), 'BTC_COST_THB:', BTC_COST_THB.toFixed(2));
 }
