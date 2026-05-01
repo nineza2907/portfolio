@@ -1779,24 +1779,27 @@ async function fetchCostBasis() {
   const btcD = acc['BTC'];
   if (btcD && btcD.total_thb > 0) BTC_COST_THB = Math.round(btcD.total_thb * 100) / 100;
 
-  // ===== 2. ดึง cost_basis sheet — SUM col E สำหรับ Banner "เงินลงทุนรวมทุกพอร์ต" =====
-  try {
-    const cbRes  = await fetch(COST_BASIS_CSV_URL);
-    const cbText = await cbRes.text();
-    const cbLines = cbText.trim().split('\n');
-    // header: asset, type, total_qty, avg_cost, total_invested_thb
-    let sumInvestedThb = 0;
-    for (let i = 1; i < cbLines.length; i++) {
-      const cols = parseCSVLine(cbLines[i]);
-      const val  = parseFloat(cols[4]); // col E = total_invested_thb
-      if (isFinite(val)) sumInvestedThb += val;
+  // ===== 2. คำนวณเงินลงทุนรวมทุกพอร์ตจาก transactions (ไม่ใช้ cost_basis เพราะ SUMIF export ผิด) =====
+  {
+    let grandTotalThb = 0;
+    // รวม total_thb ทุก BUY จากทุก type
+    for (const sym of Object.keys(acc)) {
+      const d = acc[sym];
+      if (d && d.total_thb > 0) grandTotalThb += d.total_thb;
     }
-    if (sumInvestedThb > 0) {
-      const costEl = document.getElementById('b-cost');
-      if (costEl) costEl.textContent = fmt(sumInvestedThb) + ' ฿';
+    // รวม BTC ด้วย (acc['BTC'] อาจคำนวณจาก total_thb แล้ว)
+    // ตรวจสอบซ้ำจาก raw loop แทน เพื่อความแม่นยำ
+    grandTotalThb = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const cols   = parseCSVLine(lines[i]);
+      const action = cols[3]?.toUpperCase();
+      const thb    = parseFloat(cols[8]) || 0;
+      if (action === 'BUY' && thb > 0) grandTotalThb += thb;
     }
-  } catch(e) {
-    console.warn('cost_basis sheet fetch failed:', e.message);
+    grandTotalThb = Math.round(grandTotalThb * 100) / 100;
+    const costEl = document.getElementById('b-cost');
+    if (costEl && grandTotalThb > 0) costEl.textContent = fmt(grandTotalThb) + ' ฿';
+    console.log('Grand total invested (all):', grandTotalThb.toFixed(2));
   }
 
   console.log('Applied — DEPOSIT_THB:', DEPOSIT_THB.toFixed(2), 'BTC_COST_THB:', BTC_COST_THB.toFixed(2));
