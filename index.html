@@ -1708,44 +1708,65 @@ async function fetchHistory() {
 }
 
 async function fetchCostBasis() {
-  // ดึง transactions sheet — single source of truth สำหรับต้นทุนทุกอย่าง
-  const res   = await fetch(TRANSACTIONS_CSV_URL);
-  const text  = await res.text();
-  const lines = text.trim().split('\n');
-  // header: date, asset, type, action, quantity, price_usd, price_thb, fx_rate, total_thb, note
+  // ════════════════════════════════════════════════════════════════
+  // ดึง transactions sheet — single source of truth
+  // header: date,asset,type,action,quantity,price_usd,price_thb,fx_rate,total_thb,note
+  // ════════════════════════════════════════════════════════════════
+  const res  = await fetch(TRANSACTIONS_CSV_URL);
+  const text = await res.text();
+
+  // รองรับทั้ง \r\n (Windows) และ \n (Unix)
+  const lines = text.trim().split(/\r?\n/);
+
+  // ── ตรวจ header แบบ dynamic เพื่อหา column index จริง ─────────────────────
+  const hdr = lines[0] ? lines[0].split(',').map(h => h.trim().replace(/"/g,'').toLowerCase()) : [];
+  const iDate     = hdr.indexOf('date');
+  const iAsset    = hdr.indexOf('asset');
+  const iType     = hdr.indexOf('type');
+  const iAction   = hdr.indexOf('action');
+  const iQty      = hdr.indexOf('quantity');
+  const iPriceUsd = hdr.indexOf('price_usd');
+  const iTotalThb = hdr.indexOf('total_thb');
+  console.log('[cost] header cols:', hdr);
+  console.log('[cost] col indices: asset='+iAsset+' type='+iType+' action='+iAction+' qty='+iQty+' total_thb='+iTotalThb);
 
   const acc = {}; // { SYM: { qty, total_thb, total_usd_weighted } }
-  let totalUsCostThb  = 0; // เงินลงทุน US stocks รวม
-  let grandTotalThb   = 0; // เงินลงทุนรวมทุกพอร์ต
+  let totalUsCostThb = 0;
+  let grandTotalThb  = 0;
 
   for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
-    const cols     = parseCSVLine(lines[i]);
-    const asset    = cols[1]?.trim().toUpperCase();
-    const type     = cols[2]?.trim().toLowerCase();
-    const action   = cols[3]?.trim().toUpperCase(); // ← toUpperCase ครอบคลุม 'Buy' / 'BUY'
-    const qty      = parseFloat(cols[4]) || 0;
-    const priceUsd = parseFloat(cols[5]) || 0;
-    const thb      = parseFloat(cols[8]) || 0;
-    if (!asset || !action || qty <= 0) continue;
+    const ln = lines[i].trim();
+    if (!ln) continue;
+    const cols = parseCSVLine(ln);
 
+    // ใช้ dynamic index ถ้าหาเจอ ไม่งั้นใช้ default
+    const asset    = (iAsset    >= 0 ? cols[iAsset]    : cols[1])?.trim().toUpperCase();
+    const type     = (iType     >= 0 ? cols[iType]     : cols[2])?.trim().toLowerCase();
+    const action   = (iAction   >= 0 ? cols[iAction]   : cols[3])?.trim().toUpperCase();
+    const qty      = parseFloat(iQty      >= 0 ? cols[iQty]      : cols[4]) || 0;
+    const priceUsd = parseFloat(iPriceUsd >= 0 ? cols[iPriceUsd] : cols[5]) || 0;
+    const thb      = parseFloat(iTotalThb >= 0 ? cols[iTotalThb] : cols[8]) || 0;
+
+    if (!asset || !action || qty <= 0) continue;
     if (!acc[asset]) acc[asset] = { qty: 0, total_thb: 0, total_usd_weighted: 0 };
 
     if (action === 'BUY') {
       acc[asset].qty                += qty;
       acc[asset].total_thb          += thb;
       acc[asset].total_usd_weighted += qty * priceUsd;
-      grandTotalThb += thb;                          // ← นับทุก type
-      if (type === 'us') totalUsCostThb += thb;      // ← นับเฉพาะ US
+      grandTotalThb += thb;
+      if (type === 'us') totalUsCostThb += thb;
     } else if (action === 'SELL') {
       const ratio = acc[asset].qty > 0 ? qty / acc[asset].qty : 0;
       acc[asset].total_thb          -= acc[asset].total_thb          * ratio;
       acc[asset].total_usd_weighted -= acc[asset].total_usd_weighted * ratio;
       acc[asset].qty                -= qty;
-      grandTotalThb  -= grandTotalThb  * ratio;
+      grandTotalThb                 -= grandTotalThb                 * ratio;
       if (type === 'us') totalUsCostThb -= totalUsCostThb * ratio;
     }
   }
+
+  console.log('[cost] rows='+lines.length+' grandTotal='+grandTotalThb.toFixed(2)+' US='+totalUsCostThb.toFixed(2));
 
   // ── อัปเดตหุ้นไทย ──────────────────────────────────────────────────────────
   thaiStocks.forEach(s => {
@@ -1756,7 +1777,7 @@ async function fetchCostBasis() {
     }
   });
 
-  // ── อัปเดตหุ้นสหรัฐ (avg_cost per share) ─────────────────────────────────
+  // ── อัปเดตหุ้นสหรัฐ ────────────────────────────────────────────────────────
   usStocks.forEach(s => {
     const d = acc[s.sym.toUpperCase()];
     if (d && d.qty > 0) {
@@ -1771,7 +1792,7 @@ async function fetchCostBasis() {
     }
   });
 
-  // ── DEPOSIT_THB (ต้นทุน US) → แสดง banner section US ─────────────────────
+  // ── DEPOSIT_THB (ต้นทุน US) ────────────────────────────────────────────────
   if (totalUsCostThb > 0) {
     DEPOSIT_THB = Math.round(totalUsCostThb * 100) / 100;
     const elDep = document.getElementById('us-dep-total');
@@ -1781,33 +1802,18 @@ async function fetchCostBasis() {
   }
 
   // ── BTC cost ────────────────────────────────────────────────────────────────
-  const btcD = acc['BTC'];
+  // transactions ใช้ asset = 'BTC' ส่วน cost_basis ใช้ 'BTC_THB' → check ทั้งคู่
+  const btcD = acc['BTC'] || acc['BTC_THB'];
   if (btcD && btcD.total_thb > 0) BTC_COST_THB = Math.round(btcD.total_thb * 100) / 100;
 
-  // ── Banner "เงินลงทุนรวมทุกพอร์ต" → grand total ทุก type ──────────────────
+  // ── Banner "เงินลงทุนรวมทุกพอร์ต" ─────────────────────────────────────────
   grandTotalThb = Math.round(grandTotalThb * 100) / 100;
-  console.log('[cost] lines parsed:', lines.length, '| grandTotal:', grandTotalThb, '| US:', totalUsCostThb, '| BTC:', BTC_COST_THB);
   const elCost = document.getElementById('b-cost');
-  console.log('[cost] b-cost element:', elCost ? 'found' : 'NOT FOUND');
-  if (elCost) {
-    if (grandTotalThb > 0) {
-      elCost.textContent = fmt(grandTotalThb) + ' ฿';
-      console.log('[cost] b-cost set to:', fmt(grandTotalThb));
-    } else {
-      // fallback: ถ้า grandTotal = 0 แสดง DEPOSIT_THB + Thai + BTC
-      const fallback = totalUsCostThb + BTC_COST_THB;
-      // ดึง Thai cost จาก thaiStocks
-      let thaiCostFB = 0;
-      thaiStocks.forEach(s => { thaiCostFB += s.avg * s.vol; });
-      const grandFB = Math.round((thaiCostFB + totalUsCostThb + BTC_COST_THB) * 100) / 100;
-      if (grandFB > 0) {
-        elCost.textContent = fmt(grandFB) + ' ฿';
-        console.log('[cost] b-cost fallback:', grandFB);
-      }
-    }
+  if (elCost && grandTotalThb > 0) {
+    elCost.textContent = fmt(grandTotalThb) + ' ฿';
   }
 
-  console.log('[cost] DEPOSIT_THB:', DEPOSIT_THB.toFixed(2), '| BTC:', BTC_COST_THB.toFixed(2), '| Grand:', grandTotalThb.toFixed(2));
+  console.log('[cost] DEPOSIT='+DEPOSIT_THB.toFixed(2)+' BTC='+BTC_COST_THB.toFixed(2)+' GRAND='+grandTotalThb.toFixed(2));
 }
 
 async function fetchAll(){
