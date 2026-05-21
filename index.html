@@ -437,9 +437,9 @@ td:first-child{text-align:left;}
     <div class="chart-title">📈 Profit Growth</div>
     <div class="range-btns">
       <button class="range-btn" onclick="setRange('1w',this)">1 สัปดาห์</button>
-      <button class="range-btn" onclick="setRange('1m',this)">1 เดือน</button>
+      <button class="range-btn active" onclick="setRange('1m',this)">1 เดือน</button>
       <button class="range-btn" onclick="setRange('3m',this)">3 เดือน</button>
-      <button class="range-btn active" onclick="setRange('6m',this)">6 เดือน</button>
+      <button class="range-btn" onclick="setRange('6m',this)">6 เดือน</button>
       <button class="range-btn" onclick="setRange('1y',this)">1 ปี</button>
     </div>
   </div>
@@ -570,7 +570,7 @@ td:first-child{text-align:left;}
 <script>
 // ======================== GLOBAL DECLARATIONS (ต้องอยู่บนสุด) ========================
 const IS_FILE_PROTOCOL = location.protocol === 'file:';
-let currentRange = '6m';
+let currentRange = '1m';
 let growthChart = null;
 let donutChart = null; // ต้องอยู่บนสุดก่อน updateBanner
 
@@ -1334,7 +1334,7 @@ function rebuildPortChart() {
   if (typeof buildChart === 'function' && growthChart) buildChart(currentRange);
 }
 
-buildChart('6m'); // initial render
+buildChart('1m'); // initial render
 
 // ======================== DONUT CHART ========================
 
@@ -1949,6 +1949,14 @@ async function fetchAll(){
 
   btn.disabled=false; spin.className='';
   document.getElementById('btnText').textContent='อัปเดตราคาทั้งหมด';
+
+  // ── Auto-save snapshot หลัง fetchAll เสร็จ ──────────────────
+  try {
+    await saveSnapshot();
+    console.log('[auto-save] snapshot saved after update');
+  } catch(e) {
+    console.warn('[auto-save] failed:', e.message);
+  }
 }
 
 // Binance fallback สำหรับ BTC ถ้า Sheets ล้มเหลว
