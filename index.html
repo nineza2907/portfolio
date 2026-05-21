@@ -588,7 +588,11 @@ const BTC_COST_PER_BTC = 2190308.11;
 let BTC_COST_THB = BTC_AMOUNT * BTC_COST_PER_BTC;
 let THB_RATE = 32.58;
 let DEPOSIT_THB = 32583.71;
-const PORT_MONTHLY = {};
+const PORT_MONTHLY   = {};  // key = "YYYY-M"  (month index)
+const PORT_DAILY     = {};  // key = "YYYY-MM-DD"
+const INDEX_DAILY    = {};  // key = "YYYY-MM-DD" → { sp500, set, btc }
+const BENCHMARK_DAILY = {}; // key = "YYYY-MM-DD" → { sp500, set, btc }
+let   LIVE_INDEX     = { sp500: null, set: null, btc: null, port: null };
 
 const thaiStocks = [
   { sym:'CPALL', name:'CP All PCL',      vol:6,   avg:58.35,  market:45.50 },
@@ -1570,19 +1574,7 @@ async function fetchFromSheets() {
   return data;
 }
 
-// PORT_DAILY เก็บค่ารายวัน key = "YYYY-MM-DD"
-const PORT_DAILY = {};
-
-// INDEX_DAILY เก็บค่าดัชนี raw รายวัน key="YYYY-MM-DD" value={sp500,set,btc}
-const INDEX_DAILY = {};
-
-// BENCHMARK_DAILY เก็บค่า benchmark รายวันจาก col F/G/H
-// key = "YYYY-MM-DD", value = { sp500, set, btc }
-const BENCHMARK_DAILY = {};
-
-// LIVE_INDEX: เก็บค่าดัชนี real-time จาก live row (แถวแรกของ history sheet, col B/C/D/E)
-// อัปเดตทุกครั้งที่ fetchHistory() ทำงาน — ใช้ใน saveSnapshot() เพื่อบันทึกค่าถูกต้อง
-let LIVE_INDEX = { sp500: null, set: null, btc: null, port: null };
+// (PORT_DAILY / BENCHMARK_DAILY / LIVE_INDEX → moved to DATA section)
 
 // PORT_MONTHLY — ดึงจาก history sheet คอลัมน์ E
 async function fetchHistory() {
