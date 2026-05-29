@@ -967,7 +967,7 @@ function renderUS() {
       </td>
       <td>
         <div class="${pos?'pos':'neg'}" id="upct-${s.sym}">${pos?'+':''}${pct.toFixed(2)}%</div>
-        <div style="font-size:10px;color:var(--muted)">(${pos?'+':''}${fmt(plThb)} ฿)</div>
+        <div id="upl-${s.sym}" style="font-size:10px;color:${pos?'var(--green)':'var(--red)'}">(${pos?'+':''}${fmt(plThb)} ฿)</div>
         <div class="bar-wrap"><div class="bar" style="width:${bw}%;background:${pos?'var(--green)':'var(--red)'}"></div></div>
       </td></tr>`;
   });
@@ -2006,11 +2006,13 @@ async function fetchAll(){
         const elThbV = document.getElementById('uthb-'+s.sym);
         const elPct  = document.getElementById('upct-'+s.sym);
 
+        const elPl   = document.getElementById('upl-'+s.sym);
         if(elUsd)  elUsd.textContent  = '$'+np.toFixed(2);
         if(elThbP) elThbP.textContent = '฿'+npThb.toFixed(2);
         if(elVal)  elVal.textContent  = assetUSD.toFixed(2)+' USD';
         if(elThbV) elThbV.textContent = '฿'+fmt(assetThb);
         if(elPct)  { elPct.textContent=(pos?'+':'')+pct.toFixed(2)+'%'; elPct.className=(pos?'pos':'neg'); }
+        if(elPl)   { elPl.textContent='('+(pos?'+':'')+fmt(plThb)+' ฿)'; elPl.style.color=pos?'var(--green)':'var(--red)'; }
       }
     });
     let tv=0,tc=0;
