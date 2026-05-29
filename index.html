@@ -509,7 +509,7 @@ td:first-child{text-align:left;}
     <div class="sc-val" id="s-btc-thb">— ฿</div>
     <div class="sc-sub" id="s-btc-pl" style="color:var(--muted)">— · —%</div>
     <div class="sc-sub" id="s-btc-pct" style="color:var(--muted)">—</div>
-    <div class="sc-sub" style="color:var(--muted)">0.00045185 BTC</div>
+    <div class="sc-sub" style="color:var(--muted)" id="s-btc-qty">0.00045185 BTC</div>
   </div>
 </div>
 
@@ -658,8 +658,8 @@ td:first-child{text-align:left;}
               <div><div class="sym">BTC</div><div class="sym-sub">Bitcoin · Binance TH</div></div>
             </div>
           </td>
-          <td class="muted-cell">0.00045185</td>
-          <td class="muted-cell" id="btc-avg-price">2,190,308</td>
+          <td class="muted-cell" id="btc-qty-display">0.00045185</td>
+          <td class="muted-cell" id="btc-avg-price">2,190,308 ฿</td>
           <td class="price-cell" id="btc-market-price">— ฿</td>
           <td class="price-cell" id="btc-thb">฿989.69 THB</td>
           <td>
@@ -707,8 +707,8 @@ const APPS_SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbw4evT9V0If6
 const TRANSACTIONS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=233943656`;
 
 // ======================== DATA ========================
-const BTC_AMOUNT = 0.00045185;
-const BTC_COST_PER_BTC = 2190308.11;
+let BTC_AMOUNT = 0.00045185;       // อัปเดตจาก transactions sheet
+let BTC_COST_PER_BTC = 2190308.11; // อัปเดตจาก transactions sheet
 let BTC_COST_THB = BTC_AMOUNT * BTC_COST_PER_BTC;
 let THB_RATE = 32.58;
 let DEPOSIT_THB = 32583.71;
@@ -1899,7 +1899,21 @@ async function fetchCostBasis() {
   // ── BTC cost ────────────────────────────────────────────────────────────────
   // transactions ใช้ asset = 'BTC' ส่วน cost_basis ใช้ 'BTC_THB' → check ทั้งคู่
   const btcD = acc['BTC'] || acc['BTC_THB'];
-  if (btcD && btcD.total_thb > 0) BTC_COST_THB = Math.round(btcD.total_thb * 100) / 100;
+  if (btcD && btcD.qty > 0) {
+    BTC_AMOUNT       = Math.round(btcD.qty * 1e8) / 1e8;
+    BTC_COST_THB     = Math.round(btcD.total_thb * 100) / 100;
+    BTC_COST_PER_BTC = BTC_AMOUNT > 0
+                       ? Math.round((btcD.total_thb / btcD.qty) * 100) / 100
+                       : BTC_COST_PER_BTC;
+
+    // อัปเดต UI — จำนวน BTC และราคาเฉลี่ย
+    const elQty = document.getElementById('btc-qty-display');
+    const elAvg = document.getElementById('btc-avg-price');
+    const elSum = document.getElementById('s-btc-qty');
+    if (elQty) elQty.textContent = BTC_AMOUNT.toFixed(8);
+    if (elAvg) elAvg.textContent = Math.round(BTC_COST_PER_BTC).toLocaleString('th-TH') + ' ฿';
+    if (elSum) elSum.textContent = BTC_AMOUNT.toFixed(8) + ' BTC';
+  }
 
   // ── Banner "เงินลงทุนรวมทุกพอร์ต" ─────────────────────────────────────────
   grandTotalThb = Math.round(grandTotalThb * 100) / 100;
