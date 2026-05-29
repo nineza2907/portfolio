@@ -2321,7 +2321,9 @@ function recalcTxSummary() {
       : (sel?.value || '—');
     qty = parseFloat(document.getElementById('txQty').value) || 0;
     const priceUsd = parseFloat(document.getElementById('txPriceUSD').value) || 0;
-    priceThb = priceUsd * THB_RATE;
+    // ใช้ rate จาก input ที่ผู้ใช้แก้ได้ ถ้าว่างค่อย fallback THB_RATE
+    const fxRatePreview = parseFloat(document.getElementById('txFxRate').value) || THB_RATE;
+    priceThb = priceUsd * fxRatePreview;
     totalThb = qty * priceThb;
 
     // แสดง calc ใต้ USD field
@@ -2339,7 +2341,7 @@ function recalcTxSummary() {
   document.getElementById('sum-sym').textContent   = sym;
   document.getElementById('sum-qty').textContent   = qty % 1 === 0 ? qty : qty.toFixed(7).replace(/0+$/,'');
   document.getElementById('sum-price').textContent = '฿' + priceThb.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
-  document.getElementById('sum-total').textContent = '฿' + Math.round(totalThb).toLocaleString('th-TH');
+  document.getElementById('sum-total').textContent = '฿' + totalThb.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
 
   const notice = document.getElementById('txNewStockNotice');
   notice.style.display = txIsNewStock ? 'block' : 'none';
