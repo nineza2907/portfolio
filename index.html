@@ -742,9 +742,11 @@ const usStocks = [
   { sym:'TSLA',  name:'Tesla Inc.',             shares:0.0723131, cost:428.00,   price:360.59 },
   { sym:'TSM',   name:'Taiwan Semiconductor',   shares:0.0781648, cost:392.12,   price:396.06 },
   { sym:'ASML',  name:'ASML Holding',           shares:0.0220318, cost:1391.17,  price:1438.99 },
-  { sym:'META',  name:'Meta Platforms, Inc.',    shares:0.0834375, cost:640.00,   price:640.00  },
-  { sym:'AAPL',  name:'Apple Inc.',                shares:0.1,       cost:200.00,   price:200.00  },
-  { sym:'MU',    name:'Micron Technology',           shares:0.1,       cost:100.00,   price:100.00  },
+  { sym:'META',  name:'Meta Platforms, Inc.',    shares:0.1248838, cost:614.11,   price:614.11  },
+  { sym:'AAPL',  name:'Apple Inc.',              shares:0.0392592, cost:310.50,   price:310.50  },
+  { sym:'MU',    name:'Micron Technology',       shares:0.0196177, cost:931.30,   price:931.30  },
+  { sym:'KTOS',  name:'Kratos Defense & Security', shares:0.9664937, cost:46.26,  price:46.26   },
+  { sym:'NOW',   name:'ServiceNow Inc.',          shares:0.3285556, cost:90.70,   price:90.70   },
 ];
 
 // ======================== THEME ========================
@@ -1851,7 +1853,7 @@ async function fetchCostBasis() {
     const thb      = parseFloat(iTotalThb >= 0 ? cols[iTotalThb] : cols[8]) || 0;
 
     if (!asset || !action || qty <= 0) continue;
-    if (!acc[asset]) acc[asset] = { qty: 0, total_thb: 0, total_usd_weighted: 0 };
+    if (!acc[asset]) acc[asset] = { qty: 0, total_thb: 0, total_usd_weighted: 0, type: type };
 
     if (action === 'BUY') {
       acc[asset].qty                += qty;
@@ -1892,6 +1894,23 @@ async function fetchCostBasis() {
       s.cost    = avgThb > 0 && THB_RATE > 0
                   ? Math.round((avgThb / THB_RATE) * 100) / 100
                   : s._avgUsd || s.cost;
+    }
+  });
+
+  // ── Auto-add US stocks from transactions not yet in usStocks ───────────────
+  const existingSyms = new Set(usStocks.map(s => s.sym.toUpperCase()));
+  Object.entries(acc).forEach(([sym, d]) => {
+    if (d.type === 'us' && d.qty > 0 && !existingSyms.has(sym)) {
+      const avgUsd = d.total_usd_weighted > 0 ? d.total_usd_weighted / d.qty : 0;
+      const avgThb = d.qty > 0 ? d.total_thb / d.qty : 0;
+      usStocks.push({
+        sym: sym, name: sym,
+        shares: Math.round(d.qty * 1e7) / 1e7,
+        cost:   Math.round(avgUsd * 100) / 100,
+        price:  Math.round(avgUsd * 100) / 100,
+        _avgThb: avgThb, _avgUsd: Math.round(avgUsd * 100) / 100
+      });
+      console.log('[cost] auto-added new US stock:', sym);
     }
   });
 
